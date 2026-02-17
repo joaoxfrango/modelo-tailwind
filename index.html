@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelo Tailwind</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .gradient-red {
+            background: linear-gradient(135deg, #FFFFFF 0%, #FFEBEE 100%);
+        }
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(198, 40, 40, 0.2);
+        }
+        .nav-scrolled {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+        }
+         .hero-slide {
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .slide-content {
+            transition: all 0.6s ease 0.3s;
+        }
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .progress-bar {
+            transition: width 1.5s ease-out;
+        }
+    </style>
+</head>
+
+<body class="bg-white text-gray-800">
+
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed w-full top-0 z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 md:h-20">
+                <div class="text-2xl font-bold text-blue-400">Modelo Tailwind</div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="text-gray-700 hover:text-blue-400 transition font-medium">Início</a>
+                    <a href="#about" class="text-gray-700 hover:text-blue-400 transition font-medium">Sobre</a>
+                    <a href="#services" class="text-gray-700 hover:text-blue-400 transition font-medium">Serviços</a>
+                </div>
+                <button id="mobile-menu-btn" class="md:hidden text-gray-700 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg">
+            <div class="px-4 py-4 space-y-3">
+                <a href="#home" class="block text-gray-700 hover:text-blue-400 transition font-medium">Home</a>
+                <a href="#about" class="block text-gray-700 hover:text-blue-400 transition font-medium">About</a>
+                <a href="#services" class="block text-gray-700 hover:text-blue-400 transition font-medium">Serviços</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-4 py-10">
+    </div>
+
+    <!-- SLider -->
+    <div id="home" x-data="heroSlider()" class="relative overflow-hidden" @mouseenter="autoplay = false" @mouseleave="autoplay = true">
+        <div class="relative h-[80vh] min-h-[500px]">
+            <template x-for="(slide, index) in slides" :key="index">
+                <div 
+                    x-show="currentSlide === index"
+                    x-transition.opacity.duration.800ms
+                    class="absolute inset-0"
+                >
+                    <div class="absolute inset-0 bg-gray-800">
+                        <img 
+                            :src="slide.image" 
+                            :alt="slide.title"
+                            class="w-full h-full object-cover opacity-80"
+                            @error="replaceBrokenImage($event)"
+                            loading="lazy"
+                        >
+                    </div>
+                    
+                    <div class="container mx-auto px-6 h-full flex items-center">
+                        <div 
+                            class="max-w-2xl text-white slide-content"
+                            :class="{
+                                'translate-x-0 opacity-100': currentSlide === index,
+                                'translate-x-10 opacity-0': currentSlide !== index
+                            }"
+                        >
+                            <h2 x-text="slide.title" class="text-4xl md:text-5xl font-bold mb-4"></h2>
+                            <p x-text="slide.description" class="text-xl md:text-2xl mb-8"></p>
+                            
+                        </div>
+                    </div>
+                </div>
+            </template>
+            
+            <button 
+                @click="prev()" 
+                class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center z-10 transition-all"
+                aria-label="Previous slide"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            <button 
+                @click="next()" 
+                class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center z-10 transition-all"
+                aria-label="Next slide"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+            
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
+                <template x-for="(slide, index) in slides" :key="index">
+                    <button
+                        @click="goTo(index)"
+                        class="w-2 h-2 md:w-3 md:h-3 rounded-full transition-all"
+                        :class="{
+                            'bg-white w-4 md:w-6': currentSlide === index,
+                            'bg-white/50': currentSlide !== index
+                        }"
+                        :aria-label="`Go to slide ${index + 1}`"
+                    ></button>
+                </template>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function heroSlider() {
+            return {
+                currentSlide: 0,
+                autoplay: true,
+                interval: null,
+                slides: [
+                    {
+                        title: "Primeiro Slide",
+                        description: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
+                        image: "https://images.unsplash.com/photo-1700474568247-2bf81611b293?q=80&w=1267&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    },
+                    {
+                        title: "Segundo Slide",
+                        description: "Nulla illo laudantium corrupti, odit optio tenetur harum voluptatibus",
+                        image: "https://images.unsplash.com/photo-1680503397667-3877494708a1?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    },
+                    {
+                        title: "Terceiro Slide",
+                        description: "Minima commodi delectus autem molestiae sit maxime deserunt ipsam, ut ab obcaecati dolore?",
+                        image: "https://images.unsplash.com/photo-1653972233499-eaad56990299?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    }
+                ],
+                init() {
+                    this.startAutoplay();
+                },
+                next() {
+                    this.currentSlide = (this.currentSlide + 1) % this.slides.length;
+                },
+                prev() {
+                    this.currentSlide = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
+                },
+                goTo(index) {
+                    this.currentSlide = index;
+                },
+                startAutoplay() {
+                    this.interval = setInterval(() => {
+                        if (this.autoplay) {
+                            this.next();
+                        }
+                    }, 5000);
+                },
+                replaceBrokenImage(event) {
+                    const fallbacks = [
+                        'https://picsum.photos/id/1018/1920/1080',
+                        'https://picsum.photos/id/1015/1920/1080',
+                        'https://picsum.photos/id/1019/1920/1080'
+                    ];
+                    event.target.src = fallbacks[this.currentSlide % fallbacks.length];
+                }
+            }
+        }
+    </script>
+
+    <!-- About -->
+    <section id="about" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Sobre</h2>
+                <div class="w-20 h-1 bg-blue-400 mx-auto"></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="order-2 md:order-1">
+                    <h3 class="text-3xl font-bold text-gray-900 mb-6">Lorem ipsum dolor sit</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, natus. Dolores quam aliquid reiciendis deleniti impedit fugiat aperiam quae numquam ipsa praesentium? Provident, aspernatur vitae. Mollitia alias aliquam quibusdam sint.                    </p>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, natus. Dolores quam aliquid reiciendis deleniti impedit fugiat aperiam quae numquam ipsa praesentium? Provident, aspernatur vitae. Mollitia alias aliquam quibusdam sint.    
+                    </p>
+                </div>
+                <div class="order-1 md:order-2 flex justify-center">
+                    <div class="relative">
+                        <div class="w-full max-w-md aspect-square bg-gradient-to-br from-blue-200 to-white rounded-3xl shadow-xl flex items-center justify-center text-9xl">
+                         <img src= https://images.unsplash.com/photo-1769985840514-5fcbe38ef571?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-6 leading-7 text-gray-900 bg-white sm:py-12 md:py-16">
+        <div class="box-border px-4 mx-auto border-solid sm:px-6 md:px-6 lg:px-0 max-w-7xl">
+
+            <div class="flex flex-col items-center leading-7 text-center text-gray-900 border-0 border-gray-200">
+                <h2
+                    class="box-border m-0 text-3xl font-semibold leading-tight tracking-tight text-black border-solid sm:text-4xl md:text-5xl">
+                    Serviços
+                </h2>
+                <p class="box-border mt-2 text-xl text-gray-900 border-solid sm:text-2xl">
+                </p>
+            </div>
+
+        
+            <div 
+                class="grid grid-cols-1 gap-4 mt-4 leading-7 text-gray-900 border-0 border-gray-200 sm:mt-6 sm:gap-6 md:mt-8 md:gap-0 lg:grid-cols-3">
+                <!-- Service 1 -->
+                <div
+                    class="relative z-10 flex flex-col items-center max-w-md p-4 mx-auto my-0 border border-solid rounded-lg lg:-mr-3 sm:my-0 sm:p-6 md:my-8 md:p-8">
+                    <h3
+                        class="m-0 text-2xl font-semibold leading-tight tracking-tight text-black border-0 border-gray-200 sm:text-3xl md:text-4xl">
+                        Serviço 1
+                        </h3>
+                    <div class="flex items-end mt-6 leading-7 text-gray-900 border-0 border-gray-200">
+                        <p class="box-border m-0 text-6xl font-semibold leading-none border-solid">
+                            99
+                        </p>
+                        <p class="box-border m-0 border-solid" style="border-image: initial;">
+                            ,90
+                        </p>
+                    </div>
+                    <ul class="flex-1 p-0 mt-4 ml-5 leading-7 text-gray-900 border-0 border-gray-200">
+                        <li class="inline-flex items-center block w-full mb-2 ml-5 font-semibold text-left border-solid">
+                            <svg class="w-5 h-5 mr-2 font-semibold leading-7 text-blue-600 sm:h-5 sm:w-5 md:h-6 md:w-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                                </path>
+                            </svg>
+                            Primeira linha descrição
+                        </li>
+
+                        <li class="inline-flex items-center block w-full mb-2 ml-5 font-semibold text-left border-solid">
+                            <svg class="w-5 h-5 mr-2 font-semibold leading-7 text-blue-600 sm:h-5 sm:w-5 md:h-6 md:w-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                                </path>
+                            </svg>
+                            Segunda linha descrição
+                        </li>
+
+                        <li class="inline-flex items-center block w-full mb-2 ml-5 font-semibold text-left border-solid">
+                            <svg class="w-5 h-5 mr-2 font-semibold leading-7 text-blue-600 sm:h-5 sm:w-5 md:h-6 md:w-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                                </path>
+                            </svg>
+                            Terceira linha descrição
+                        </li>
+
+                    </ul>
+                    <a href="#"
+                        class="inline-flex justify-center w-full px-4 py-3 mt-8 font-sans text-sm leading-none text-center text-blue-600 no-underline bg-transparent border border-blue-600 rounded-md cursor-pointer hover:bg-blue-700 hover:border-blue-700 hover:text-white focus-within:bg-blue-700 focus-within:border-blue-700 focus-within:text-white sm:text-base md:text-lg">
+                        Escolher
+                    </a>
+                </div>
+                <!-- Service 2 -->
+                <div
+                    class="relative z-20 flex flex-col items-center max-w-md p-4 mx-auto my-0 bg-white border-4 border-blue-600 border-solid rounded-lg sm:p-6 md:px-8 md:py-16">
+                    <h3
+                        class="m-0 text-2xl font-semibold leading-tight tracking-tight text-black border-0 border-gray-200 sm:text-3xl md:text-4xl">
+                        Serviço 2
+                    </h3>
+                    <div class="flex items-end mt-6 leading-7 text-gray-900 border-0 border-gray-200">
+                        <p class="box-border m-0 text-6xl font-semibold leading-none border-solid">
+                            999
+                        </p>
+                        <p class="box-border m-0 border-solid" style="border-image: initial;">
+                            ,99
+                        </p>
+                    </div>
+                    <ul class="flex-1 p-0 mt-4 ml-5 leading-7 text-gray-900 border-0 border-gray-200">
+                        <li class="inline-flex items-center block w-full mb-2 ml-5 font-semibold text-left border-solid">
+                            <svg class="w-5 h-5 mr-2 font-semibold leading-7 text-blue-600 sm:h-5 sm:w-5 md:h-6 md:w-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                                </path>
+                            </svg>
+                            Primeira linha descrição
+                        </li>
+
+                        <li class="inline-flex items-center block w-full mb-2 ml-5 font-semibold text-left border-solid">
+                            <svg class="w-5 h-5 mr-2 font-semibold leading-7 text-blue-600 sm:h-5 sm:w-5 md:h-6 md:w-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                                </path>
+                            </svg>
+                            Segunda linha descrição
+                        </li>
+
+                        <li class="inline-flex items-center block w-full mb-2 ml-5 font-semibold text-left border-solid">
+                            <svg class="w-5 h-5 mr-2 font-semibold leading-7 text-blue-600 sm:h-5 sm:w-5 md:h-6 md:w-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                                </path>
+                            </svg>
+                            Terceira linha descrição
+                        </li>
+
+                        <li class="inline-flex items-center block w-full mb-2 ml-5 font-semibold text-left border-solid">
+                            <svg class="w-5 h-5 mr-2 font-semibold leading-7 text-blue-600 sm:h-5 sm:w-5 md:h-6 md:w-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                                </path>
+                            </svg>
+                            Quarta linha descrição
+                        </li>
+                    </ul>
+
+                    <a href="#"
+                        class="inline-flex justify-center w-full px-4 py-3 mt-8 font-sans text-sm leading-none text-center text-white no-underline bg-blue-600 border rounded-md cursor-pointer hover:bg-blue-700 hover:border-blue-700 hover:text-white focus-within:bg-blue-700 focus-within:border-blue-700 focus-within:text-white sm:text-base md:text-lg">
+                        Escolher 
+                    </a>
+                </div>
+                <!-- Service 3 -->
+                <div
+                    class="relative z-10 flex flex-col items-center max-w-md p-4 mx-auto my-0 border border-solid rounded-lg lg:-ml-3 sm:my-0 sm:p-6 md:my-8 md:p-8">
+                    <h3
+                        class="m-0 text-2xl font-semibold leading-tight tracking-tight text-black border-0 border-gray-200 sm:text-3xl md:text-4xl">
+                        Serviço 3
+                    </h3>
+                    <div class="flex items-end mt-6 leading-7 text-gray-900 border-0 border-gray-200">
+                        <p class="box-border m-0 text-6xl font-semibold leading-none border-solid">
+                            9.999
+                        </p>
+                        <p class="box-border m-0 border-solid" style="border-image: initial;">
+                            ,90
+                        </p>
+                    </div>
+
+                    <ul class="flex-1 p-0 mt-4 leading-7 text-gray-900 border-0 border-gray-200">
+                        <li class="inline-flex items-center block w-full mb-2 ml-5 font-semibold text-left border-solid">
+                            <svg class="w-5 h-5 mr-2 font-semibold leading-7 text-blue-600 sm:h-5 sm:w-5 md:h-6 md:w-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                                </path>
+                            </svg>
+                            Primeira linha descrição
+                        </li>
+
+                        <li class="inline-flex items-center block w-full mb-2 ml-5 font-semibold text-left border-solid">
+                            <svg class="w-5 h-5 mr-2 font-semibold leading-7 text-blue-600 sm:h-5 sm:w-5 md:h-6 md:w-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                              </path>
+                            </svg>
+                            Segunda linha descrição
+                        </li>
+
+                        <li class="inline-flex items-center block w-full mb-2 ml-5 font-semibold text-left border-solid">
+                            <svg class="w-5 h-5 mr-2 font-semibold leading-7 text-blue-600 sm:h-5 sm:w-5 md:h-6 md:w-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                                </path>
+                            </svg>
+                            Terceira linha descrição
+                        </li>
+
+
+                        <li class="inline-flex items-center block w-full mb-2 ml-5 font-semibold text-left border-solid">
+                            <svg class="w-5 h-5 mr-2 font-semibold leading-7 text-blue-600 sm:h-5 sm:w-5 md:h-6 md:w-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                                </path>
+                            </svg>
+                            Quarta linha descrição
+                        </li>
+
+
+                        <li class="inline-flex items-center block w-full mb-2 ml-5 font-semibold text-left border-solid">
+                            <svg class="w-5 h-5 mr-2 font-semibold leading-7 text-blue-600 sm:h-5 sm:w-5 md:h-6 md:w-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                                </path>
+                            </svg>
+                            Quinta linha descrição
+                        </li>
+
+                        <li class="inline-flex items-center block w-full mb-2 ml-5 font-semibold text-left border-solid">
+                            <svg class="w-5 h-5 mr-2 font-semibold leading-7 text-blue-600 sm:h-5 sm:w-5 md:h-6 md:w-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                                </path>
+                            </svg>
+                            Sexta linha descrição
+                        </li>
+
+                    </ul>
+                    <a href="#"
+                        class="inline-flex justify-center w-full px-4 py-3 mt-8 font-sans text-sm leading-none text-center text-blue-600 no-underline bg-transparent border border-blue-600 rounded-md cursor-pointer hover:bg-blue-700 hover:border-blue-700 hover:text-white focus-within:bg-blue-700 focus-within:border-blue-700 focus-within:text-white sm:text-base md:text-lg">
+                        Escolher
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <h3 class="text-2xl font-bold mb-4">Modelo Tailwind</h3>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Links 1</h4>
+                    <div class="space-y-2">
+                        <a href="#home" class="block text-blue-300 hover:text-white transition">Descrição Link 1.1</a>
+                        <a href="#about" class="block text-blue-300 hover:text-white transition">Descrição Link 1.2</a>
+                        <a href="#services" class="block text-blue-300 hover:text-white transition">Descrição Link 1.3</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Links 2</h4>
+                    <div class="space-y-2">
+                        <a href="#home" class="block text-blue-300 hover:text-white transition">Descrição Link 2.1</a>
+                        <a href="#about" class="block text-blue-300 hover:text-white transition">Descrição Link 2.2</a>
+                        <a href="#services" class="block text-blue-300 hover:text-white transition">Descrição Link 2.3</a>
+                        <a href="#services" class="block text-blue-300 hover:text-white transition">Descrição Link 2.4</a>
+                    </div>
+                </div>                
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('nav-scrolled');
+            } else {
+                navbar.classList.remove('nav-scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // Form submission
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Thank you for your message! I will get back to you soon.');
+            e.target.reset();
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>   
